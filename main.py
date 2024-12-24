@@ -59,7 +59,11 @@ class Spaceship:
 class Asteroid:
     def __init__(self):
         self.original_image = ASTEROID
-        self.image = self.original_image
+        self.size_multiplier = random.uniform(0.8, 2.5)
+        self.image = pygame.transform.scale(
+            self.original_image,
+            (int(40 * self.size_multiplier), int(40 * self.size_multiplier))
+        )
         self.rect = self.image.get_rect(
             center=(random.randint(0, SCREEN_WIDTH), random.randint(-100, -40))
         )
@@ -69,11 +73,11 @@ class Asteroid:
 
     def update_orientation(self):
         if self.speed_x > 0:
-            self.image = pygame.transform.flip(self.original_image, True, False)
+            self.image = pygame.transform.flip(self.image, True, False)
         elif self.speed_x < 0:
-            self.image = self.original_image
+            self.image = self.image
         elif self.speed_x == 0 and self.speed_y > 0:
-            self.image = pygame.transform.rotate(self.original_image, 45)
+            self.image = pygame.transform.rotate(self.image, 45)
 
     def move(self):
         self.rect.x += self.speed_x
@@ -175,6 +179,7 @@ def main():
     stars = [Star() for _ in range(120)]
     score = 0
     asteroid_speed_multiplier = 1
+    asteroid_size_multiplier = 1
     star_speed_multiplier = 1
     running = True
 
@@ -186,8 +191,9 @@ def main():
                 running = False
 
         if score % 50 == 0 and score != 0:
-            asteroid_speed_multiplier += 0.002
-            star_speed_multiplier += 0.002
+            asteroid_speed_multiplier += 0.0025
+            asteroid_size_multiplier += 0.002
+            star_speed_multiplier += 0.0025
 
         for star in stars:
             star.y += int(star.speed * star_speed_multiplier)
@@ -225,7 +231,6 @@ def main():
                 crystals.remove(crystal)
                 crystals.append(EnergyCrystal())
 
-        # Display score
         font = pygame.font.SysFont(None, 36)
         score_text = font.render(f"Score: {score}", True, WHITE)
         screen.blit(score_text, (10, 10))
